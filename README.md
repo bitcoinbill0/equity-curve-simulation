@@ -1,1 +1,1 @@
-# equity-curve-simulation
+# Equity Curve Simulation
