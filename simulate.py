@@ -1,4 +1,6 @@
 import random
+import numpy as np
+import pandas as pd
 
 simulations = []
 
@@ -15,7 +17,7 @@ trades_per_week = 2
 
 def run_simulation():
     balance = start_balance
-    equity_curve = []
+    equity_curve = [start_balance]
     last_trade_winner = False
     while balance < balance_limit:
         num = random.randrange(1, 100)
@@ -44,9 +46,12 @@ def build_stats(simulations):
     for sim in simulations:
         trades = len(sim)
         months = trades / trades_per_week / 4
+        sharpe_ratio = round((sim[-1] - start_balance) / np.std(sim), 1)
         stats.append({
             'trades': trades,
-            'months': months
+            'months': months,
+            'sharpe_ratio': sharpe_ratio,
+            'equity_curve': sim
         })
     return stats
 
