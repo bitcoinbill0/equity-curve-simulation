@@ -1,12 +1,18 @@
 import random
+import statistics
 import numpy as np
 import pandas as pd
+import pprint
+import matplotlib.pyplot as plt
+import numpy as np
+
+pp = pprint.PrettyPrinter(indent=4)
 
 simulations = []
 
 count = 10
-win_rate = 0.62
-risk_reward = 5
+win_rate = 0.5
+risk_reward = 3
 balance_limit = 1000000
 start_balance = 1000
 stop_distance = 0.005
@@ -58,8 +64,37 @@ def build_stats(simulations):
 def run():
     for i in range(0, count):
         simulations.append(run_simulation())
-    # TODO - measure the risk adjusted returns of each equity curve, and analyse the variance
+
     stats = build_stats(simulations)
-    print(stats)
+
+    sharpe_ratios = list(map(lambda x: x['sharpe_ratio'], stats))
+    trades = list(map(lambda x: x['trades'], stats))
+
+    sharpe_ratio_mean = round(statistics.mean(sharpe_ratios), 1)
+    sharpe_ratio_stdev = round(np.std(sharpe_ratios), 1)
+    sharpe_ratio_min = round(min(sharpe_ratios), 1)
+    sharpe_ratio_max = round(max(sharpe_ratios), 1)
+
+    trades_mean = round(statistics.mean(trades), 1)
+    trades_stdev = round(np.std(trades), 1)
+    trades_min = round(min(trades), 1)
+    trades_max = round(max(trades), 1)
+
+    pp.pprint({
+        'sharpe_ratio_mean': sharpe_ratio_mean,
+        'sharpe_ratio_stdev': sharpe_ratio_stdev,
+        'sharpe_ratio_min': sharpe_ratio_min,
+        'sharpe_ratio_max': sharpe_ratio_max,
+        'trades_mean': trades_mean,
+        'trades_stdev': trades_stdev,
+        'trades_min': trades_min,
+        'trades_max': trades_max
+    })
+
+    n = 0
+    for item in stats:
+        plt.plot(item['equity_curve'])
+        plt.savefig('plots/plot' + str(n) + '.png')
+        n = n + 1
 
 run()
